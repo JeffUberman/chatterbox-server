@@ -1,4 +1,5 @@
 /*************************************************************
+http://localhost:8080/?ws=localhost:8080&port=5858
 
 You should implement your request handler function in this file.
 
@@ -15,6 +16,24 @@ this file and include it in basic-server.js so that it actually works.
 // module.exports = {
 
   //
+   /* TO-DO request.method is being correctly recognized.
+  have separate handling code for method equals post and method equals get
+  Where to store the messages?? array or array of objects? Test for just an array for now.
+  For chat client will need multiple arrays/objects.
+  Instead of default headers in line 87, do we need any specific headers to get and post (from postman)
+  test from postman
+  status codes need to be different for post and error
+  we need this request method: http://stackoverflow.com/questions/4295782/how-do-you-extract-post-data-in-node-js
+  */
+
+//<Buffer 7b 20 22 6e 61 6d 65 22 3a 20 22 4a 65 66 66 22 0a 7d> logging data
+
+// gets flushed everytime server rebooted (by nodemon) is this also like response's internal buffer?
+// roomname is a property
+var messageData = {
+  results : []
+};
+
 
 var requestHandler = function(request, response) {
 
@@ -32,22 +51,11 @@ var requestHandler = function(request, response) {
   // Adding more logging to your server can be an easy way to get passive
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
-
-  console.log("Serving request type " + request.method + " for url " + request.url );
-
-  /* TO-DO request.method is being correctly recognized. 
-  have separate handling code for method equals post and method equals get
-  Where to store the messages?? array or array of objects? Test for just an array for now.
-  For chat client will need multiple arrays/objects. 
-  Instead of default headers in line 87, do we need any specific headers to get and post (from postman) 
-  test from postman 
-  status codes need to be different for post and error
-  we need this request method: http://stackoverflow.com/questions/4295782/how-do-you-extract-post-data-in-node-js
-  */
-
-  // The outgoing status. 
+  console.log("Serving request type " + request.method + " for url " + request.url);
+  //9 character - classes, later is our substring string.substring(9)
+  var specificUrl = request.url.substring(9);
+  // The outgoing status.
   // var statusCode = 200;
-  var statusCode = response.statusCode;
 
   // See the note below about CORS headers.
   var headers = defaultCorsHeaders;
@@ -56,9 +64,60 @@ var requestHandler = function(request, response) {
   //
   // You will need to change this if you are sending something
   // other than plain text, like JSON or HTML.
+  headers['Content-Type'] = "text/plain";
+//check url
 
-  // response.setHeader('Content-Type', 'application/json')
-  headers['Content-Type'] = 'application/json';
+  // if(request.url !== 'http://127.0.0.1:3000') {
+  //     var statusCode = 404;
+  //     response.writeHead(statusCode, headers);
+  //     response.end("Nope (server shaking it's head)");
+
+  // } else
+  // hard code end points to check for valid urls
+
+  if(request.method === 'POST') {
+
+      var statusCode = 201;
+      var cleanData;
+
+      request.on('data', function(data) {
+        console.log("in request on");
+        cleanData = JSON.parse(data);
+        //adding room to messages recieved
+        if(!cleanData.roomname && specificUrl !== 'messages'){
+          cleanData.roomname = specificUrl;
+        } else if (!cleanData.roomname && specificUrl === 'messages'){
+          cleanData.roomname = 'defaultRoom';
+        }
+        messageData.results.push(cleanData);
+        console.log(messageData + "this is the POSTed message");
+      })
+
+      response.writeHead(statusCode, headers);
+      response.end('got your message!');
+
+  } else if(request.method === 'GET') {
+      var getSpecificData = {
+      results : []
+      };
+      var statusCode = 200;
+      //iterate over results and pick up rooms === specificUrl for loop
+      //
+      for(var i=0; i<messageData.results.length; i++){
+        if(messageData.results[i].roomname === specificUrl){
+          getSpecificData.results.push(messageData.results[i]);
+        }
+      }
+      if(getSpecificData.results.length === 0) {
+        console.log(getSpecificData.results.length);
+        statusCode = 404;
+      }
+      response.writeHead(statusCode, headers);
+      console.log(getSpecificData + "this is the searched data");
+      response.end(JSON.stringify(getSpecificData));
+
+    }
+
 
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
@@ -71,12 +130,7 @@ var requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  // var data = {
-  //   "username": "monisha",
-  //   "profession": "software engg"
-  // };
-  // request.end(data);
-  response.end("Serving request type " + request.method + " for url " + request.url);
+  response.end("Hello, World!");
 };
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
@@ -94,7 +148,9 @@ var defaultCorsHeaders = {
   "access-control-allow-headers": "content-type, accept",
   "access-control-max-age": 10 // Seconds.
 };
-// }
+
+
+
 exports.requestHandler = requestHandler;
 
 
