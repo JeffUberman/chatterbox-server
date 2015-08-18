@@ -1,4 +1,7 @@
 /* Import node's http module: */
+var exportedHandler = require("./request-handler.js"); //without this file, throws error: net::ERR_CONNECTION_REFUSED
+//after exporting and require, error: ERR_EMPTY_RESPONSE
+
 var http = require("http");
 
 
@@ -12,7 +15,7 @@ var port = 3000;
 // For now, since you're running this server on your local machine,
 // we'll have it listen on the IP address 127.0.0.1, which is a
 // special address that always refers to localhost.
-var ip = "127.0.0.1";
+var ip = "127.0.0.1"; //home
 
 
 
@@ -22,7 +25,7 @@ var ip = "127.0.0.1";
 // incoming requests.
 //
 // After creating the server, we will tell it to listen on the given port and IP. */
-var server = http.createServer(handleRequest);
+var server = http.createServer(exportedHandler.requestHandler);
 console.log("Listening on http://" + ip + ":" + port);
 server.listen(port, ip);
 
