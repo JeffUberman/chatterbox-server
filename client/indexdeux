@@ -26,6 +26,6 @@
       <div id="chatbox">
       </div>
     </div>
-    <script src="scripts/app.js"></script>
+    <script src="scripts/app2.js"></script>
   </body>
 </html>
