@@ -14,8 +14,10 @@ this file and include it in basic-server.js so that it actually works.
  // var exports = {};
 // module.exports = {
 
+  //
+
 var requestHandler = function(request, response) {
-  debugger;
+
   // Request and Response come from node's http module.
   //
   // They include information about both the incoming request, such as
@@ -33,7 +35,14 @@ var requestHandler = function(request, response) {
 
   console.log("Serving request type " + request.method + " for url " + request.url );
 
-  // The outgoing status.
+  /* TO-DO request.method is being correctly recognized. 
+  have separate handling code for method equals post and method equals get
+  headers for both will be different
+  Where to store the messages?? array or array of objects? Test for just an array for now. 
+  Instead of default headers in line 87, add specific headers to get and post (from postman) 
+  test from postman */
+
+  // The outgoing status. 
   // var statusCode = 200;
   var statusCode = response.statusCode;
 
