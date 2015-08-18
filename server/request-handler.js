@@ -37,10 +37,13 @@ var requestHandler = function(request, response) {
 
   /* TO-DO request.method is being correctly recognized. 
   have separate handling code for method equals post and method equals get
-  headers for both will be different
-  Where to store the messages?? array or array of objects? Test for just an array for now. 
-  Instead of default headers in line 87, add specific headers to get and post (from postman) 
-  test from postman */
+  Where to store the messages?? array or array of objects? Test for just an array for now.
+  For chat client will need multiple arrays/objects. 
+  Instead of default headers in line 87, do we need any specific headers to get and post (from postman) 
+  test from postman 
+  status codes need to be different for post and error
+  we need this request method: http://stackoverflow.com/questions/4295782/how-do-you-extract-post-data-in-node-js
+  */
 
   // The outgoing status. 
   // var statusCode = 200;
