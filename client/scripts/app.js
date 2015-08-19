@@ -3,7 +3,7 @@ var app = {
     init: function(){
         app.friends = {}
         app.fetch()
-        app.username= 'genericUser'
+        app.username= prompt('what\'s your name?')
 
         //if using a text field, every character input is a change so look into text field vs dropdown
         $(document).on('change', '#roomSelect', function() {
@@ -50,7 +50,6 @@ var app = {
             success:function(data){
                 app.clearMessages()
                 data = JSON.parse(data);
-                console.log(data);
                 data.results.forEach(app.addMessage)
 
                 var currentRoom = $('#roomSelect').val()
@@ -108,7 +107,7 @@ var app = {
     handleSubmit: function(e){
         e.preventDefault();
         var message = {
-            username: 'genericUser',
+            username: app.username,
             text:$('#message').val(),
             roomname:$('#roomSelect').val()
         };
